@@ -1,0 +1,87 @@
+name: MacVital
+options:
+  bundleIdPrefix: com.macvital
+  deploymentTarget:
+    macOS: "14.0"
+  xcodeVersion: "15.0"
+  createIntermediateGroups: true
+  minimumXcodeGenVersion: "2.30"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.10"
+    MACOSX_DEPLOYMENT_TARGET: "14.0"
+
+targets:
+  MacVital:
+    type: application
+    platform: macOS
+    sources:
+      - path: MacVital
+        excludes:
+          - "**/*.plist"
+      - path: Shared
+      - path: MacVitalHelper/Readers
+        excludes:
+          - "**/*.plist"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.macvital.app
+        INFOPLIST_FILE: MacVital/Info.plist
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_APP_SANDBOX: NO
+        ENABLE_HARDENED_RUNTIME: YES
+        PRODUCT_NAME: MacVital
+        GENERATE_INFOPLIST_FILE: NO
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        LD_RUNPATH_SEARCH_PATHS:
+          - "@executable_path/../Frameworks"
+    dependencies:
+      - target: MacVitalHelper
+        embed: true
+        codeSign: true
+        copyPhase:
+          destination: executables
+    preBuildScripts:
+      - name: Copy LaunchDaemon plist
+        script: |
+          DEST="${BUILT_PRODUCTS_DIR}/${CONTENTS_FOLDER_PATH}/Library/LaunchDaemons"
+          mkdir -p "$DEST"
+          cp "${SRCROOT}/MacVitalHelper/launchd.plist" "$DEST/com.macvital.helper.plist"
+    info:
+      path: MacVital/Info.plist
+
+  MacVitalHelper:
+    type: tool
+    platform: macOS
+    sources:
+      - path: MacVitalHelper
+        excludes:
+          - "**/*.plist"
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.macvital.helper
+        INFOPLIST_FILE: MacVitalHelper/Info.plist
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGN_STYLE: Manual
+        ENABLE_HARDENED_RUNTIME: YES
+        PRODUCT_NAME: MacVitalHelper
+        GENERATE_INFOPLIST_FILE: NO
+        SKIP_INSTALL: YES
+    info:
+      path: MacVitalHelper/Info.plist
+
+  MacVitalTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.macvital.tests
+        CODE_SIGN_IDENTITY: "-"
+    dependencies:
+      - target: MacVital
