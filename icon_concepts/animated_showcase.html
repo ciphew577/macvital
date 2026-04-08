@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacVital — Animated Icon Concepts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a1a;
+    color: #c8c8c8;
+    font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    padding: 40px;
+  }
+  h1 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 500;
+    color: #e0e0e0;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 50px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .card {
+    background: #222;
+    border-radius: 16px;
+    padding: 30px;
+    text-align: center;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .card:hover { border-color: #444; }
+  .card.selected { border-color: #52b2ac; }
+  .card h3 {
+    color: #e0e0e0;
+    font-size: 16px;
+    font-weight: 500;
+    margin-top: 20px;
+    margin-bottom: 6px;
+  }
+  .card p {
+    font-size: 12px;
+    color: #888;
+    line-height: 1.4;
+  }
+  .icon-wrap {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    border-radius: 44px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ===== CONCEPT 1: Live Pulse — real ECG that traces continuously ===== */
+  .c1 { background: #1e2228; }
+  .c1 svg { width: 100%; height: 100%; }
+  .c1 .pulse-line {
+    stroke: #52b2ac;
+    stroke-width: 3;
+    fill: none;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: tracePulse 2.4s linear infinite;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .c1 .pulse-glow {
+    stroke: #52b2ac;
+    stroke-width: 6;
+    fill: none;
+    opacity: 0.15;
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: tracePulse 2.4s linear infinite;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .c1 .grid-line {
+    stroke: #2a2f38;
+    stroke-width: 0.5;
+  }
+  .c1 .dot {
+    fill: #52b2ac;
+    animation: dotPulse 2.4s ease-in-out infinite;
+  }
+  @keyframes tracePulse {
+    0% { stroke-dashoffset: 600; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes dotPulse {
+    0%, 100% { opacity: 0.3; r: 3; }
+    50% { opacity: 1; r: 5; }
+  }
+
+  /* ===== CONCEPT 2: Breathing Bars — bars that rise/fall like breathing ===== */
+  .c2 { background: #1e2228; }
+  .c2 .bar {
+    rx: 4;
+    animation: breathe 3s ease-in-out infinite;
+    transform-origin: bottom;
+  }
+  .c2 .bar:nth-child(1) { fill: #52b2ac; animation-delay: 0s; }
+  .c2 .bar:nth-child(2) { fill: #6b8cae; animation-delay: 0.3s; }
+  .c2 .bar:nth-child(3) { fill: #c4956a; animation-delay: 0.6s; }
+  .c2 .bar:nth-child(4) { fill: #8b7bb5; animation-delay: 0.9s; }
+  .c2 .bar:nth-child(5) { fill: #7a9a6e; animation-delay: 1.2s; }
+  .c2 .bar:nth-child(6) { fill: #b56b6b; animation-delay: 0.4s; }
+  .c2 .bar:nth-child(7) { fill: #52b2ac; animation-delay: 0.7s; }
+  @keyframes breathe {
+    0%, 100% { transform: scaleY(0.4); opacity: 0.6; }
+    50% { transform: scaleY(1); opacity: 1; }
+  }
+
+  /* ===== CONCEPT 3: Orbital Ring — spinning ring with metric dots ===== */
+  .c3 { background: #1e2228; }
+  .c3 .orbit-ring {
+    fill: none;
+    stroke: #2a3040;
+    stroke-width: 2;
+  }
+  .c3 .orbit-group {
+    animation: orbit 8s linear infinite;
+    transform-origin: 100px 100px;
+  }
+  .c3 .orbit-group-2 {
+    animation: orbit 12s linear infinite reverse;
+    transform-origin: 100px 100px;
+  }
+  .c3 .center-text {
+    fill: #e0e0e0;
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: central;
+    animation: countUp 4s steps(1) infinite;
+  }
+  .c3 .center-label {
+    fill: #666;
+    font-family: -apple-system, sans-serif;
+    font-size: 10px;
+    text-anchor: middle;
+    letter-spacing: 2px;
+  }
+  @keyframes orbit {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  /* ===== CONCEPT 4: Wave Scanner — scanning line across waveforms ===== */
+  .c4 { background: #1e2228; }
+  .c4 .scan-line {
+    stroke: #52b2ac;
+    stroke-width: 2;
+    opacity: 0.6;
+    animation: scan 3s linear infinite;
+  }
+  .c4 .wave {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+  }
+  .c4 .wave-1 { stroke: #52b2ac; opacity: 0.9; }
+  .c4 .wave-2 { stroke: #6b8cae; opacity: 0.7; }
+  .c4 .wave-3 { stroke: #c4956a; opacity: 0.5; }
+  .c4 .wave-fill-1 {
+    fill: #52b2ac;
+    opacity: 0.08;
+    animation: waveShift1 4s ease-in-out infinite;
+  }
+  .c4 .wave-fill-2 {
+    fill: #6b8cae;
+    opacity: 0.06;
+    animation: waveShift2 5s ease-in-out infinite;
+  }
+  .c4 .wave-fill-3 {
+    fill: #c4956a;
+    opacity: 0.05;
+    animation: waveShift3 6s ease-in-out infinite;
+  }
+  @keyframes scan {
+    0% { transform: translateX(-10px); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { transform: translateX(210px); opacity: 0; }
+  }
+  @keyframes waveShift1 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes waveShift2 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(4px); }
+  }
+  @keyframes waveShift3 {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
+  }
+
+  /* ===== CONCEPT 5: Gauge Needle — analog gauge that sweeps ===== */
+  .c5 { background: #1e2228; }
+  .c5 .gauge-bg { fill: none; stroke: #2a3040; stroke-width: 8; stroke-linecap: round; }
+  .c5 .gauge-fill { fill: none; stroke-width: 8; stroke-linecap: round; animation: gaugeSweep 3s ease-in-out infinite alternate; }
+  .c5 .needle {
+    stroke: #e0e0e0;
+    stroke-width: 3;
+    stroke-linecap: round;
+    transform-origin: 100px 110px;
+    animation: needleSweep 3s ease-in-out infinite alternate;
+  }
+  .c5 .needle-dot { fill: #e0e0e0; }
+  .c5 .gauge-value {
+    fill: #e0e0e0;
+    font-family: 'SF Mono', monospace;
+    font-size: 22px;
+    font-weight: 600;
+    text-anchor: middle;
+    animation: valueChange 3s ease-in-out infinite alternate;
+  }
+  .c5 .gauge-unit {
+    fill: #666;
+    font-family: -apple-system, sans-serif;
+    font-size: 10px;
+    text-anchor: middle;
+  }
+  .c5 .tick { stroke: #444; stroke-width: 1; }
+  .c5 .tick-major { stroke: #666; stroke-width: 2; }
+  @keyframes needleSweep {
+    0% { transform: rotate(-50deg); }
+    100% { transform: rotate(50deg); }
+  }
+  @keyframes gaugeSweep {
+    0% { stroke-dashoffset: 160; stroke: #52b2ac; }
+    100% { stroke-dashoffset: 40; stroke: #c4956a; }
+  }
+  @keyframes valueChange {
+    0% { fill: #52b2ac; }
+    100% { fill: #c4956a; }
+  }
+
+  /* ===== CONCEPT 6: Heartbeat Chip — chip with pulsing heart rate ===== */
+  .c6 { background: #1e2228; }
+  .c6 .chip-body {
+    fill: #252a33;
+    stroke: #3a4050;
+    stroke-width: 1;
+    rx: 12;
+  }
+  .c6 .pin { fill: #3a4050; rx: 1; }
+  .c6 .heartbeat-line {
+    stroke: #d46b6b;
+    stroke-width: 2.5;
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 400;
+    stroke-dashoffset: 400;
+    animation: heartTrace 1.8s ease-in-out infinite;
+  }
+  .c6 .heart-ring {
+    fill: none;
+    stroke: #d46b6b;
+    stroke-width: 1;
+    opacity: 0;
+    animation: ringPulse 1.8s ease-out infinite;
+  }
+  .c6 .bpm-text {
+    fill: #d46b6b;
+    font-family: 'SF Mono', monospace;
+    font-size: 11px;
+    text-anchor: middle;
+    animation: bpmFlicker 1.8s ease-in-out infinite;
+  }
+  @keyframes heartTrace {
+    0% { stroke-dashoffset: 400; }
+    60% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; opacity: 0.3; }
+  }
+  @keyframes ringPulse {
+    0% { r: 5; opacity: 0.5; }
+    100% { r: 25; opacity: 0; }
+  }
+  @keyframes bpmFlicker {
+    0%, 100% { opacity: 0.5; }
+    30% { opacity: 1; }
+  }
+
+  /* ===== CONCEPT 7: Activity Rings (Apple Watch style) ===== */
+  .c7 { background: #1e2228; }
+  .c7 .ring-bg { fill: none; stroke-width: 10; opacity: 0.15; }
+  .c7 .ring { fill: none; stroke-width: 10; stroke-linecap: round; }
+  .c7 .ring-1 { stroke: #52b2ac; stroke-dasharray: 264; animation: ring1Fill 4s ease-in-out infinite alternate; }
+  .c7 .ring-2 { stroke: #6b8cae; stroke-dasharray: 214; animation: ring2Fill 5s ease-in-out infinite alternate; }
+  .c7 .ring-3 { stroke: #c4956a; stroke-dasharray: 164; animation: ring3Fill 3.5s ease-in-out infinite alternate; }
+  .c7 .ring-bg-1 { stroke: #52b2ac; }
+  .c7 .ring-bg-2 { stroke: #6b8cae; }
+  .c7 .ring-bg-3 { stroke: #c4956a; }
+  .c7 .ring-label {
+    fill: #888;
+    font-family: -apple-system, sans-serif;
+    font-size: 8px;
+    text-anchor: middle;
+  }
+  .c7 .ring-value {
+    fill: #e0e0e0;
+    font-family: 'SF Mono', monospace;
+    font-size: 20px;
+    font-weight: 600;
+    text-anchor: middle;
+    dominant-baseline: central;
+  }
+  @keyframes ring1Fill {
+    0% { stroke-dashoffset: 200; }
+    100% { stroke-dashoffset: 40; }
+  }
+  @keyframes ring2Fill {
+    0% { stroke-dashoffset: 170; }
+    100% { stroke-dashoffset: 30; }
+  }
+  @keyframes ring3Fill {
+    0% { stroke-dashoffset: 140; }
+    100% { stroke-dashoffset: 20; }
+  }
+
+  /* ===== CONCEPT 8: Matrix Rain — scrolling data columns ===== */
+  .c8 { background: #181c22; }
+  .c8 text {
+    font-family: 'SF Mono', 'Menlo', monospace;
+    font-size: 11px;
+    fill: #52b2ac;
+  }
+  .c8 .col { animation: matrixFall linear infinite; }
+  .c8 .col-1 { animation-duration: 4s; animation-delay: 0s; }
+  .c8 .col-2 { animation-duration: 3.2s; animation-delay: 0.5s; }
+  .c8 .col-3 { animation-duration: 5s; animation-delay: 1s; }
+  .c8 .col-4 { animation-duration: 3.8s; animation-delay: 0.3s; }
+  .c8 .col-5 { animation-duration: 4.5s; animation-delay: 0.8s; }
+  .c8 .col-6 { animation-duration: 3.5s; animation-delay: 1.2s; }
+  .c8 .col-7 { animation-duration: 4.2s; animation-delay: 0.1s; }
+  .c8 .overlay-text {
+    fill: #e0e0e0;
+    font-family: 'SF Mono', monospace;
+    font-size: 32px;
+    font-weight: 700;
+    text-anchor: middle;
+    dominant-baseline: central;
+    letter-spacing: 4px;
+  }
+  .c8 .overlay-sub {
+    fill: #52b2ac;
+    font-family: -apple-system, sans-serif;
+    font-size: 9px;
+    text-anchor: middle;
+    letter-spacing: 3px;
+  }
+  @keyframes matrixFall {
+    0% { transform: translateY(-40px); opacity: 0; }
+    10% { opacity: 0.6; }
+    90% { opacity: 0.2; }
+    100% { transform: translateY(220px); opacity: 0; }
+  }
+
+  /* ===== CONCEPT 9: Live Dashboard Mini ===== */
+  .c9 { background: #1e2228; }
+  .c9 .tile {
+    fill: #252a33;
+    rx: 6;
+  }
+  .c9 .mini-bar { animation: miniPulse 2s ease-in-out infinite; transform-origin: bottom; }
+  .c9 .mini-bar:nth-child(odd) { animation-delay: 0.3s; }
+  .c9 .cpu-arc {
+    fill: none;
+    stroke: #52b2ac;
+    stroke-width: 4;
+    stroke-linecap: round;
+    stroke-dasharray: 60;
+    animation: arcFill 2.5s ease-in-out infinite alternate;
+  }
+  .c9 .mem-fill {
+    fill: #6b8cae;
+    animation: memGrow 3s ease-in-out infinite alternate;
+    transform-origin: bottom;
+  }
+  .c9 .temp-fill {
+    fill: #c4956a;
+    animation: tempRise 4s ease-in-out infinite alternate;
+    transform-origin: bottom;
+  }
+  .c9 .net-dot {
+    fill: #7a9a6e;
+    animation: netBlink 0.8s ease-in-out infinite alternate;
+  }
+  .c9 .tile-label {
+    fill: #555;
+    font-family: -apple-system, sans-serif;
+    font-size: 7px;
+    text-anchor: middle;
+  }
+  @keyframes miniPulse {
+    0%, 100% { transform: scaleY(0.5); }
+    50% { transform: scaleY(1); }
+  }
+  @keyframes arcFill {
+    0% { stroke-dashoffset: 50; }
+    100% { stroke-dashoffset: 10; }
+  }
+  @keyframes memGrow {
+    0% { transform: scaleY(0.3); }
+    100% { transform: scaleY(0.85); }
+  }
+  @keyframes tempRise {
+    0% { transform: scaleY(0.4); }
+    100% { transform: scaleY(0.9); }
+  }
+  @keyframes netBlink {
+    0% { opacity: 0.2; }
+    100% { opacity: 1; }
+  }
+
+  .select-btn {
+    display: inline-block;
+    margin-top: 14px;
+    padding: 6px 20px;
+    background: transparent;
+    border: 1px solid #444;
+    color: #aaa;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .select-btn:hover { border-color: #52b2ac; color: #52b2ac; }
+  .card.selected .select-btn { background: #52b2ac; color: #1a1a1a; border-color: #52b2ac; }
+
+  .sizes {
+    max-width: 1100px;
+    margin: 60px auto 0;
+    text-align: center;
+  }
+  .sizes h2 {
+    color: #888;
+    font-size: 14px;
+    font-weight: 400;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .size-row {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+  }
+  .size-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+  .size-item span { font-size: 10px; color: #555; }
+  .size-64 .icon-wrap { width: 64px; height: 64px; border-radius: 14px; }
+  .size-32 .icon-wrap { width: 32px; height: 32px; border-radius: 7px; }
+
+  .note {
+    text-align: center;
+    max-width: 600px;
+    margin: 50px auto 0;
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+  }
+</style>
+</head>
+<body>
+
+<h1>MacVital — Animated Icon Concepts</h1>
+<p class="subtitle">All icons are live CSS/SVG animations. Click to select your favourite.</p>
+
+<div class="grid">
+
+  <!-- 1. Live Pulse -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c1">
+      <svg viewBox="0 0 200 200">
+        <line class="grid-line" x1="0" y1="50" x2="200" y2="50"/>
+        <line class="grid-line" x1="0" y1="100" x2="200" y2="100"/>
+        <line class="grid-line" x1="0" y1="150" x2="200" y2="150"/>
+        <line class="grid-line" x1="50" y1="0" x2="50" y2="200"/>
+        <line class="grid-line" x1="100" y1="0" x2="100" y2="200"/>
+        <line class="grid-line" x1="150" y1="0" x2="150" y2="200"/>
+        <path class="pulse-glow" d="M 10,105 L 40,105 50,105 60,95 70,115 80,60 90,150 100,40 110,130 120,90 130,105 140,100 150,110 160,105 190,105"/>
+        <path class="pulse-line" d="M 10,105 L 40,105 50,105 60,95 70,115 80,60 90,150 100,40 110,130 120,90 130,105 140,100 150,110 160,105 190,105"/>
+        <circle class="dot" cx="190" cy="105" r="4"/>
+      </svg>
+    </div>
+    <h3>Live Pulse</h3>
+    <p>Continuous ECG trace with trailing dot. Classic system heartbeat.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 2. Breathing Bars -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c2">
+      <svg viewBox="0 0 200 200">
+        <rect class="bar" x="22" y="40" width="16" height="120" rx="4"/>
+        <rect class="bar" x="46" y="40" width="16" height="120" rx="4"/>
+        <rect class="bar" x="70" y="40" width="16" height="120" rx="4"/>
+        <rect class="bar" x="94" y="40" width="16" height="120" rx="4"/>
+        <rect class="bar" x="118" y="40" width="16" height="120" rx="4"/>
+        <rect class="bar" x="142" y="40" width="16" height="120" rx="4"/>
+        <rect class="bar" x="166" y="40" width="16" height="120" rx="4"/>
+      </svg>
+    </div>
+    <h3>Breathing Bars</h3>
+    <p>Metric bars that rise and fall like breathing. Each bar = a system metric.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 3. Orbital -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c3">
+      <svg viewBox="0 0 200 200">
+        <circle class="orbit-ring" cx="100" cy="100" r="70"/>
+        <circle class="orbit-ring" cx="100" cy="100" r="50"/>
+        <g class="orbit-group">
+          <circle cx="100" cy="30" r="6" fill="#52b2ac"/>
+          <circle cx="170" cy="100" r="4" fill="#6b8cae"/>
+          <circle cx="100" cy="170" r="5" fill="#c4956a"/>
+        </g>
+        <g class="orbit-group-2">
+          <circle cx="50" cy="100" r="4" fill="#8b7bb5"/>
+          <circle cx="140" cy="55" r="3" fill="#7a9a6e"/>
+        </g>
+        <text class="center-label" x="100" y="82">SYSTEM</text>
+        <text class="center-text" x="100" y="106">72%</text>
+        <text class="center-label" x="100" y="122" style="font-size:8px;fill:#52b2ac">HEALTHY</text>
+      </svg>
+    </div>
+    <h3>Orbital</h3>
+    <p>Orbiting metric dots around a central health score. Planetary feel.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 4. Wave Scanner -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c4">
+      <svg viewBox="0 0 200 200">
+        <path class="wave-fill-1" d="M 0,90 Q 25,70 50,85 T 100,75 T 150,90 T 200,80 L 200,200 L 0,200 Z"/>
+        <path class="wave-fill-2" d="M 0,120 Q 30,105 60,115 T 120,108 T 180,118 T 200,110 L 200,200 L 0,200 Z"/>
+        <path class="wave-fill-3" d="M 0,150 Q 35,140 70,148 T 140,142 T 200,150 L 200,200 L 0,200 Z"/>
+        <path class="wave wave-1" d="M 0,90 Q 25,70 50,85 T 100,75 T 150,90 T 200,80"/>
+        <path class="wave wave-2" d="M 0,120 Q 30,105 60,115 T 120,108 T 180,118 T 200,110"/>
+        <path class="wave wave-3" d="M 0,150 Q 35,140 70,148 T 140,142 T 200,150"/>
+        <line class="scan-line" x1="0" y1="30" x2="0" y2="190"/>
+        <text x="15" y="40" fill="#52b2ac" font-family="SF Mono,monospace" font-size="9" opacity="0.5">CPU</text>
+        <text x="15" y="52" fill="#6b8cae" font-family="SF Mono,monospace" font-size="9" opacity="0.5">MEM</text>
+        <text x="15" y="64" fill="#c4956a" font-family="SF Mono,monospace" font-size="9" opacity="0.5">GPU</text>
+      </svg>
+    </div>
+    <h3>Wave Scanner</h3>
+    <p>Layered activity waves with scanning line. Real-time data stream feel.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 5. Gauge -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c5">
+      <svg viewBox="0 0 200 200">
+        <!-- tick marks -->
+        <line class="tick" x1="42" y1="145" x2="50" y2="140"/>
+        <line class="tick-major" x1="35" y1="120" x2="45" y2="118"/>
+        <line class="tick" x1="38" y1="95" x2="46" y2="97"/>
+        <line class="tick-major" x1="50" y1="72" x2="57" y2="77"/>
+        <line class="tick" x1="70" y1="55" x2="75" y2="62"/>
+        <line class="tick-major" x1="95" y1="47" x2="97" y2="56"/>
+        <line class="tick" x1="120" y1="48" x2="120" y2="57"/>
+        <line class="tick-major" x1="143" y1="55" x2="139" y2="63"/>
+        <line class="tick" x1="160" y1="72" x2="154" y2="78"/>
+        <line class="tick-major" x1="165" y1="95" x2="157" y2="97"/>
+        <!-- gauge arc bg -->
+        <path class="gauge-bg" d="M 40,140 A 70,70 0 1,1 160,140" stroke-dasharray="300"/>
+        <!-- gauge arc fill -->
+        <path class="gauge-fill" d="M 40,140 A 70,70 0 1,1 160,140" stroke-dasharray="200" stroke-dashoffset="100" stroke="#52b2ac"/>
+        <!-- needle -->
+        <line class="needle" x1="100" y1="110" x2="60" y2="75"/>
+        <circle class="needle-dot" cx="100" cy="110" r="5"/>
+        <!-- value -->
+        <text class="gauge-value" x="100" y="152">47°C</text>
+        <text class="gauge-unit" x="100" y="168">CPU TEMP</text>
+      </svg>
+    </div>
+    <h3>Gauge Needle</h3>
+    <p>Analog gauge with sweeping needle. Changes color as load increases.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 6. Heartbeat Chip -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c6">
+      <svg viewBox="0 0 200 200">
+        <!-- pins -->
+        <rect class="pin" x="40" y="15" width="8" height="16"/>
+        <rect class="pin" x="60" y="15" width="8" height="16"/>
+        <rect class="pin" x="80" y="15" width="8" height="16"/>
+        <rect class="pin" x="100" y="15" width="8" height="16"/>
+        <rect class="pin" x="120" y="15" width="8" height="16"/>
+        <rect class="pin" x="140" y="15" width="8" height="16"/>
+        <rect class="pin" x="40" y="170" width="8" height="16"/>
+        <rect class="pin" x="60" y="170" width="8" height="16"/>
+        <rect class="pin" x="80" y="170" width="8" height="16"/>
+        <rect class="pin" x="100" y="170" width="8" height="16"/>
+        <rect class="pin" x="120" y="170" width="8" height="16"/>
+        <rect class="pin" x="140" y="170" width="8" height="16"/>
+        <rect class="pin" x="15" y="50" width="16" height="8"/>
+        <rect class="pin" x="15" y="70" width="16" height="8"/>
+        <rect class="pin" x="15" y="90" width="16" height="8"/>
+        <rect class="pin" x="15" y="110" width="16" height="8"/>
+        <rect class="pin" x="15" y="130" width="16" height="8"/>
+        <rect class="pin" x="170" y="50" width="16" height="8"/>
+        <rect class="pin" x="170" y="70" width="16" height="8"/>
+        <rect class="pin" x="170" y="90" width="16" height="8"/>
+        <rect class="pin" x="170" y="110" width="16" height="8"/>
+        <rect class="pin" x="170" y="130" width="16" height="8"/>
+        <!-- chip body -->
+        <rect class="chip-body" x="32" y="32" width="136" height="136"/>
+        <!-- heartbeat line -->
+        <path class="heartbeat-line" d="M 45,100 L 65,100 72,100 78,90 84,110 90,55 96,145 102,35 108,125 114,85 120,100 126,97 132,105 138,100 155,100"/>
+        <!-- pulse ring -->
+        <circle class="heart-ring" cx="155" cy="100" r="5"/>
+        <!-- text -->
+        <text class="bpm-text" x="100" y="150">72 BPM</text>
+      </svg>
+    </div>
+    <h3>Heartbeat Chip</h3>
+    <p>CPU chip with live heartbeat trace inside. Tech meets vital signs.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 7. Activity Rings -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c7">
+      <svg viewBox="0 0 200 200">
+        <!-- outer ring - CPU -->
+        <circle class="ring-bg ring-bg-1" cx="100" cy="100" r="78"/>
+        <circle class="ring ring-1" cx="100" cy="100" r="78" transform="rotate(-90 100 100)"/>
+        <!-- middle ring - Memory -->
+        <circle class="ring-bg ring-bg-2" cx="100" cy="100" r="62"/>
+        <circle class="ring ring-2" cx="100" cy="100" r="62" transform="rotate(-90 100 100)"/>
+        <!-- inner ring - GPU -->
+        <circle class="ring-bg ring-bg-3" cx="100" cy="100" r="46"/>
+        <circle class="ring ring-3" cx="100" cy="100" r="46" transform="rotate(-90 100 100)"/>
+        <!-- labels -->
+        <text class="ring-label" x="100" y="80" fill="#52b2ac">CPU</text>
+        <text class="ring-value" x="100" y="105">OK</text>
+        <text class="ring-label" x="100" y="125" fill="#c4956a">GPU</text>
+      </svg>
+    </div>
+    <h3>Activity Rings</h3>
+    <p>Apple Watch-style rings for CPU, memory, GPU. Fills animate with load.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 8. Data Rain -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c8">
+      <svg viewBox="0 0 200 200">
+        <g class="col col-1"><text x="20" y="0" opacity="0.7">48</text><text x="20" y="16" opacity="0.5">C2</text><text x="20" y="32" opacity="0.3">91</text><text x="20" y="48" opacity="0.2">FF</text></g>
+        <g class="col col-2"><text x="45" y="0" opacity="0.6">3A</text><text x="45" y="16" opacity="0.4">07</text><text x="45" y="32" opacity="0.3">B4</text><text x="45" y="48" opacity="0.1">2E</text></g>
+        <g class="col col-3"><text x="70" y="0" opacity="0.5">D1</text><text x="70" y="16" opacity="0.3">8F</text><text x="70" y="32" opacity="0.2">55</text><text x="70" y="48" opacity="0.1">A0</text></g>
+        <g class="col col-4"><text x="95" y="0" opacity="0.8">7C</text><text x="95" y="16" opacity="0.5">E3</text><text x="95" y="32" opacity="0.3">19</text><text x="95" y="48" opacity="0.2">6B</text></g>
+        <g class="col col-5"><text x="120" y="0" opacity="0.6">F2</text><text x="120" y="16" opacity="0.4">44</text><text x="120" y="32" opacity="0.2">9D</text><text x="120" y="48" opacity="0.1">B8</text></g>
+        <g class="col col-6"><text x="145" y="0" opacity="0.7">06</text><text x="145" y="16" opacity="0.4">AC</text><text x="145" y="32" opacity="0.2">73</text><text x="145" y="48" opacity="0.1">1F</text></g>
+        <g class="col col-7"><text x="170" y="0" opacity="0.5">5E</text><text x="170" y="16" opacity="0.3">C7</text><text x="170" y="32" opacity="0.2">82</text><text x="170" y="48" opacity="0.1">D0</text></g>
+        <!-- overlay -->
+        <rect x="30" y="65" width="140" height="70" rx="8" fill="#1e2228" opacity="0.85"/>
+        <text class="overlay-text" x="100" y="100">MV</text>
+        <text class="overlay-sub" x="100" y="120">SYSTEM MONITOR</text>
+      </svg>
+    </div>
+    <h3>Data Rain</h3>
+    <p>Falling hex data with bold MV monogram. Matrix-meets-terminal aesthetic.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+  <!-- 9. Live Dashboard Mini -->
+  <div class="card" onclick="selectCard(this)">
+    <div class="icon-wrap c9">
+      <svg viewBox="0 0 200 200">
+        <!-- 2x2 tiles -->
+        <!-- CPU tile -->
+        <rect class="tile" x="15" y="15" width="80" height="80"/>
+        <path class="cpu-arc" d="M 35,70 A 25,25 0 1,1 75,70" transform="rotate(0 55 55)"/>
+        <text class="tile-label" x="55" y="80">CPU</text>
+        <!-- Memory tile -->
+        <rect class="tile" x="105" y="15" width="80" height="80"/>
+        <rect fill="#252a33" x="120" y="30" width="50" height="50" rx="4"/>
+        <rect class="mem-fill" x="120" y="30" width="50" height="50" rx="4"/>
+        <text class="tile-label" x="145" y="80">MEM</text>
+        <!-- Temp tile -->
+        <rect class="tile" x="15" y="105" width="80" height="80"/>
+        <rect fill="#252a33" x="50" y="120" width="10" height="50" rx="5"/>
+        <rect class="temp-fill" x="50" y="120" width="10" height="50" rx="5"/>
+        <circle fill="#c4956a" cx="55" cy="168" r="5" opacity="0.5"/>
+        <text class="tile-label" x="55" y="180" style="fill:#c4956a">TEMP</text>
+        <!-- Network tile -->
+        <rect class="tile" x="105" y="105" width="80" height="80"/>
+        <circle class="net-dot" cx="130" cy="145" r="3"/>
+        <circle class="net-dot" cx="145" cy="138" r="4" style="animation-delay:0.2s"/>
+        <circle class="net-dot" cx="160" cy="145" r="3" style="animation-delay:0.4s"/>
+        <path d="M 130,145 Q 137,130 145,138 Q 152,148 160,145" fill="none" stroke="#7a9a6e" stroke-width="1.5" opacity="0.3"/>
+        <text class="tile-label" x="145" y="170" style="fill:#7a9a6e">NET</text>
+      </svg>
+    </div>
+    <h3>Dashboard Mini</h3>
+    <p>4-tile mini dashboard with live CPU ring, memory fill, temp, and network.</p>
+    <button class="select-btn">Select</button>
+  </div>
+
+</div>
+
+<div class="note">
+  Inspired by: <strong>Stats</strong> (exelban/stats), <strong>eul</strong> (gao-sun/eul), <strong>iStat Menus</strong>, <strong>iPulse</strong>, <strong>iGlance</strong><br>
+  All animations are pure CSS — the real dock icon would use NSDockTile + Core Animation for the same effect.
+</div>
+
+<script>
+function selectCard(card) {
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+  card.classList.toggle('selected');
+}
+</script>
+
+</body>
+</html>

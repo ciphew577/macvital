@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MacVital Icon Concepts</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: #1a1d24;
+      color: #c8cdd5;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+      padding: 48px 24px;
+      min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      font-weight: 600;
+      color: #e8ecf0;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 15px;
+      color: #7a8290;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.5;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: #52b2ac;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      margin-bottom: 20px;
+      padding-left: 4px;
+    }
+
+    /* Current icon comparison */
+    .current-section {
+      max-width: 400px;
+      margin: 0 auto 56px;
+      text-align: center;
+    }
+
+    .current-card {
+      background: #22262f;
+      border: 1px solid #2e3340;
+      border-radius: 16px;
+      padding: 32px;
+      display: inline-block;
+    }
+
+    .current-card img {
+      width: 128px;
+      height: 128px;
+      border-radius: 28px;
+      image-rendering: auto;
+    }
+
+    .current-card .label {
+      margin-top: 14px;
+      font-size: 14px;
+      color: #7a8290;
+    }
+
+    /* Concepts grid */
+    .concepts-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      max-width: 1100px;
+      margin: 0 auto 56px;
+    }
+
+    @media (max-width: 900px) {
+      .concepts-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 500px) {
+      .concepts-grid {
+        grid-template-columns: 1fr;
+        max-width: 340px;
+      }
+    }
+
+    .concept-card {
+      background: #22262f;
+      border: 2px solid #2e3340;
+      border-radius: 16px;
+      padding: 24px;
+      text-align: center;
+      transition: border-color 0.2s ease, transform 0.15s ease;
+      cursor: default;
+      position: relative;
+    }
+
+    .concept-card:hover {
+      border-color: #3a4050;
+      transform: translateY(-2px);
+    }
+
+    .concept-card.selected {
+      border-color: #52b2ac;
+    }
+
+    .concept-card.selected::after {
+      content: 'SELECTED';
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #52b2ac;
+      color: #1a1d24;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .concept-number {
+      font-size: 12px;
+      font-weight: 500;
+      color: #52b2ac;
+      letter-spacing: 0.5px;
+      margin-bottom: 16px;
+    }
+
+    .concept-icon {
+      width: 192px;
+      height: 192px;
+      border-radius: 42px;
+      margin: 0 auto 16px;
+      display: block;
+      image-rendering: auto;
+    }
+
+    .concept-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #e0e4ea;
+      margin-bottom: 6px;
+    }
+
+    .concept-desc {
+      font-size: 13px;
+      color: #6b7280;
+      line-height: 1.45;
+      min-height: 38px;
+    }
+
+    .select-btn {
+      margin-top: 14px;
+      background: transparent;
+      border: 1px solid #3a4050;
+      color: #8a909c;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 7px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: inherit;
+    }
+
+    .select-btn:hover {
+      border-color: #52b2ac;
+      color: #52b2ac;
+    }
+
+    .concept-card.selected .select-btn {
+      background: #52b2ac;
+      border-color: #52b2ac;
+      color: #1a1d24;
+      font-weight: 600;
+    }
+
+    /* Size preview section */
+    .size-section {
+      max-width: 1100px;
+      margin: 0 auto 56px;
+    }
+
+    .size-section h2 {
+      font-size: 20px;
+      font-weight: 600;
+      color: #e0e4ea;
+      margin-bottom: 8px;
+    }
+
+    .size-section p {
+      font-size: 14px;
+      color: #6b7280;
+      margin-bottom: 24px;
+    }
+
+    .size-grid {
+      display: grid;
+      grid-template-columns: repeat(9, 1fr);
+      gap: 16px;
+      align-items: end;
+    }
+
+    @media (max-width: 900px) {
+      .size-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    .size-item {
+      text-align: center;
+    }
+
+    .size-item .icon-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 80px;
+      margin-bottom: 8px;
+    }
+
+    .size-item img {
+      image-rendering: auto;
+    }
+
+    .size-item .size-label {
+      font-size: 11px;
+      color: #555c68;
+      font-weight: 500;
+    }
+
+    .size-item .concept-label {
+      font-size: 10px;
+      color: #444a55;
+      margin-top: 2px;
+    }
+
+    /* Size row for each concept */
+    .size-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      padding: 16px 0;
+      border-bottom: 1px solid #2a2e38;
+    }
+
+    .size-row:last-child {
+      border-bottom: none;
+    }
+
+    .size-row-label {
+      width: 110px;
+      flex-shrink: 0;
+      font-size: 13px;
+      font-weight: 500;
+      color: #8a909c;
+    }
+
+    .size-row-icons {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .size-preview {
+      text-align: center;
+    }
+
+    .size-preview img {
+      image-rendering: auto;
+      display: block;
+      margin: 0 auto 4px;
+    }
+
+    .size-preview .px-label {
+      font-size: 10px;
+      color: #4a5060;
+      font-weight: 500;
+    }
+
+    /* Footer */
+    .footer {
+      text-align: center;
+      padding-top: 24px;
+      border-top: 1px solid #2a2e38;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .footer p {
+      font-size: 13px;
+      color: #4a5060;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <h1>MacVital Icon Concepts</h1>
+    <p>Eight design directions for the MacVital system monitor icon. Click "Select" to mark your preference. All concepts use flat matte style with muted accent colors on dark backgrounds.</p>
+  </div>
+
+  <!-- Current icon -->
+  <div class="current-section">
+    <div class="section-label">Current Icon</div>
+    <div class="current-card">
+      <img src="current.png" alt="Current MacVital icon">
+      <div class="label">Existing icon (for comparison)</div>
+    </div>
+  </div>
+
+  <!-- Concepts grid -->
+  <div style="max-width: 1100px; margin: 0 auto;">
+    <div class="section-label">New Concepts</div>
+  </div>
+  <div class="concepts-grid" id="conceptsGrid">
+
+    <div class="concept-card" data-concept="1">
+      <div class="concept-number">01</div>
+      <img class="concept-icon" src="concept_1.png" alt="Pulse Chip">
+      <div class="concept-name">Pulse Chip</div>
+      <div class="concept-desc">ECG waveform inside a CPU chip outline with metric bars. Tech-meets-vital-signs.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="2">
+      <div class="concept-number">02</div>
+      <img class="concept-icon" src="concept_2.png" alt="Gauge Dial">
+      <div class="concept-name">Gauge Dial</div>
+      <div class="concept-desc">Circular speedometer gauge with needle and color-coded arc. Classic monitoring aesthetic.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="3">
+      <div class="concept-number">03</div>
+      <img class="concept-icon" src="concept_3.png" alt="Vital Bars">
+      <div class="concept-name">Vital Bars</div>
+      <div class="concept-desc">Equalizer-style vertical bars at varied heights. Each bar a different muted color for system metrics.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="4">
+      <div class="concept-number">04</div>
+      <img class="concept-icon" src="concept_4.png" alt="Heart Circuit">
+      <div class="concept-name">Heart Circuit</div>
+      <div class="concept-desc">Heart shape made from circuit board traces with solder pads and branching connections.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="5">
+      <div class="concept-number">05</div>
+      <img class="concept-icon" src="concept_5.png" alt="Grid Monitor">
+      <div class="concept-name">Grid Monitor</div>
+      <div class="concept-desc">3x3 grid of mini metric tiles: bars, rings, waves, dots. Dashboard-in-miniature.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="6">
+      <div class="concept-number">06</div>
+      <img class="concept-icon" src="concept_6.png" alt="Wave Stack">
+      <div class="concept-name">Wave Stack</div>
+      <div class="concept-desc">Three stacked activity waves like layered terrain. CPU, memory, and network in muted colors.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="7">
+      <div class="concept-number">07</div>
+      <img class="concept-icon" src="concept_7.png" alt="Dot Matrix">
+      <div class="concept-name">Dot Matrix</div>
+      <div class="concept-desc">Circular dot array with pulse pattern sweep and ECG line through center. Retro-digital feel.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+    <div class="concept-card" data-concept="8">
+      <div class="concept-number">08</div>
+      <img class="concept-icon" src="concept_8.png" alt="Swiss Minimal">
+      <div class="concept-name">Swiss Minimal</div>
+      <div class="concept-desc">Ultra-clean "MV" monogram with a subtle pulse line. Swiss International design style.</div>
+      <button class="select-btn" onclick="toggleSelect(this)">Select</button>
+    </div>
+
+  </div>
+
+  <!-- Size previews -->
+  <div class="size-section">
+    <h2>Size Testing</h2>
+    <p>How each concept reads at dock icon sizes (64px, 32px, 16px).</p>
+
+    <div class="size-row">
+      <div class="size-row-label">Current</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="current.png" width="64" height="64" style="border-radius:14px;" alt="Current 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="current.png" width="32" height="32" style="border-radius:7px;" alt="Current 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="current.png" width="16" height="16" style="border-radius:4px;" alt="Current 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">01 Pulse Chip</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_1.png" width="64" height="64" style="border-radius:14px;" alt="Concept 1 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_1.png" width="32" height="32" style="border-radius:7px;" alt="Concept 1 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_1.png" width="16" height="16" style="border-radius:4px;" alt="Concept 1 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">02 Gauge Dial</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_2.png" width="64" height="64" style="border-radius:14px;" alt="Concept 2 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_2.png" width="32" height="32" style="border-radius:7px;" alt="Concept 2 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_2.png" width="16" height="16" style="border-radius:4px;" alt="Concept 2 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">03 Vital Bars</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_3.png" width="64" height="64" style="border-radius:14px;" alt="Concept 3 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_3.png" width="32" height="32" style="border-radius:7px;" alt="Concept 3 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_3.png" width="16" height="16" style="border-radius:4px;" alt="Concept 3 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">04 Heart Circuit</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_4.png" width="64" height="64" style="border-radius:14px;" alt="Concept 4 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_4.png" width="32" height="32" style="border-radius:7px;" alt="Concept 4 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_4.png" width="16" height="16" style="border-radius:4px;" alt="Concept 4 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">05 Grid Monitor</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_5.png" width="64" height="64" style="border-radius:14px;" alt="Concept 5 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_5.png" width="32" height="32" style="border-radius:7px;" alt="Concept 5 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_5.png" width="16" height="16" style="border-radius:4px;" alt="Concept 5 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">06 Wave Stack</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_6.png" width="64" height="64" style="border-radius:14px;" alt="Concept 6 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_6.png" width="32" height="32" style="border-radius:7px;" alt="Concept 6 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_6.png" width="16" height="16" style="border-radius:4px;" alt="Concept 6 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">07 Dot Matrix</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_7.png" width="64" height="64" style="border-radius:14px;" alt="Concept 7 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_7.png" width="32" height="32" style="border-radius:7px;" alt="Concept 7 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_7.png" width="16" height="16" style="border-radius:4px;" alt="Concept 7 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+    <div class="size-row">
+      <div class="size-row-label">08 Swiss Minimal</div>
+      <div class="size-row-icons">
+        <div class="size-preview"><img src="concept_8.png" width="64" height="64" style="border-radius:14px;" alt="Concept 8 64px"><div class="px-label">64px</div></div>
+        <div class="size-preview"><img src="concept_8.png" width="32" height="32" style="border-radius:7px;" alt="Concept 8 32px"><div class="px-label">32px</div></div>
+        <div class="size-preview"><img src="concept_8.png" width="16" height="16" style="border-radius:4px;" alt="Concept 8 16px"><div class="px-label">16px</div></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="footer">
+    <p>MacVital Icon Concepts &mdash; Generated with Python + Pillow &mdash; 512x512 source PNGs</p>
+  </div>
+
+  <script>
+    function toggleSelect(btn) {
+      const card = btn.closest('.concept-card');
+      const wasSelected = card.classList.contains('selected');
+
+      // Deselect all
+      document.querySelectorAll('.concept-card').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('.select-btn').textContent = 'Select';
+      });
+
+      // Toggle this one
+      if (!wasSelected) {
+        card.classList.add('selected');
+        btn.textContent = 'Selected';
+      }
+    }
+  </script>
+
+</body>
+</html>
