@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacVitals Sunburst Chart Demo</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #141414;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', sans-serif;
+  }
+
+  .outer-layout {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+  }
+
+  .chart-wrapper {
+    position: relative;
+    width: 560px;
+    height: 560px;
+    flex-shrink: 0;
+  }
+
+  .chart-wrapper svg.main-svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: visible;
+  }
+
+  /* Center text overlay */
+  .chart-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    z-index: 10;
+    transition: all 0.2s ease;
+  }
+
+  .center-icon {
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    margin-bottom: 4px;
+    display: none;
+    background: #2a2a2e;
+    object-fit: contain;
+  }
+
+  .center-main {
+    font-size: 34px;
+    font-weight: 700;
+    color: #e05555;
+    letter-spacing: -0.5px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .center-sub {
+    font-size: 12px;
+    color: #777;
+    font-weight: 400;
+    margin-top: 4px;
+  }
+
+  .center-footprint {
+    font-size: 10px;
+    color: #444;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.3px;
+    margin-top: 3px;
+  }
+
+  .center-footprint span {
+    color: #3a3a3a;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 8px;
+    letter-spacing: 0.8px;
+  }
+
+  /* Swap ring */
+  .swap-ring {
+    position: absolute;
+    bottom: 30px;
+    right: 18px;
+    width: 130px;
+    height: 130px;
+  }
+
+  .swap-ring svg {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+
+  .swap-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+  }
+
+  .swap-gb {
+    font-size: 14px;
+    font-weight: 700;
+    color: #aaa;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+
+  .swap-label {
+    font-size: 9px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    position: fixed;
+    background: rgba(28, 28, 30, 0.96);
+    border: 1px solid #333;
+    border-radius: 12px;
+    padding: 10px 14px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+    z-index: 1000;
+    min-width: 170px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  .tooltip.visible { opacity: 1; }
+
+  .tooltip-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .tooltip-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    flex-shrink: 0;
+  }
+
+  .tooltip-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #e8e8e8;
+  }
+
+  .tooltip-mem {
+    font-size: 12px;
+    color: #888;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .tooltip-pct {
+    font-size: 11px;
+    color: #555;
+    margin-top: 1px;
+  }
+
+  /* SVG slice states */
+  .outer-slice {
+    cursor: pointer;
+    transition: filter 0.1s ease, opacity 0.1s ease;
+  }
+
+  .outer-slice:hover {
+    filter: brightness(1.3) saturate(1.2);
+    opacity: 0.9;
+  }
+
+  .inner-slice {
+    cursor: default;
+  }
+
+  .ring-label {
+    fill: #999;
+    font-size: 10px;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+    pointer-events: none;
+    letter-spacing: 0.1px;
+  }
+
+  .callout-label {
+    fill: #aaa;
+    font-size: 10px;
+    font-family: -apple-system, 'Helvetica Neue', sans-serif;
+    font-weight: 500;
+    pointer-events: none;
+  }
+
+  .callout-line {
+    stroke: #444;
+    stroke-width: 0.8;
+    fill: none;
+  }
+
+  /* Status bar at bottom */
+  .status-bar {
+    display: flex;
+    gap: 20px;
+    padding: 12px 24px;
+    background: rgba(255,255,255,0.03);
+    border-top: 1px solid #222;
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+    color: #444;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+  }
+
+  .stat-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #ccc;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-value.elevated { color: #e8a030; }
+  .stat-value.critical { color: #e05555; }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+</style>
+</head>
+<body>
+
+<div class="outer-layout">
+  <div class="main-content">
+    <div class="chart-wrapper" id="chartWrapper">
+      <div class="chart-center" id="chartCenter">
+        <img class="center-icon" id="centerIcon" src="" alt="">
+        <div class="center-main" id="centerMain">27.8 GB</div>
+        <div class="center-sub" id="centerSub">of 24 GB RAM</div>
+        <div class="center-footprint" id="centerFootprint">
+          <span>Footprint:</span> 36.38 GB
+        </div>
+      </div>
+
+      <div class="swap-ring" id="swapRing">
+        <div class="swap-center">
+          <div class="swap-gb">5.77 GB</div>
+          <div class="swap-label">Swap</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="status-bar">
+      <div class="stat">
+        <div class="stat-label">Physical Memory</div>
+        <div class="stat-value">24 GB</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Used</div>
+        <div class="stat-value critical">22.53 GB</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Pressure</div>
+        <div class="stat-value elevated">Elevated</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Swap Used</div>
+        <div class="stat-value">5.77 GB</div>
+      </div>
+      <div class="stat">
+        <div class="stat-label">Disk Free</div>
+        <div class="stat-value">55.61 GB</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="tooltip" id="tooltip">
+  <div class="tooltip-header">
+    <div class="tooltip-dot" id="ttDot"></div>
+    <div class="tooltip-name" id="ttName"></div>
+  </div>
+  <div class="tooltip-mem" id="ttMem"></div>
+  <div class="tooltip-pct" id="ttPct"></div>
+</div>
+
+<script>
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+const TOTAL_RAM_GB = 24;
+const USED_GB = 27.8;     // can exceed RAM due to compression
+const FOOTPRINT_GB = 36.38;
+const SWAP_GB = 5.77;
+
+// Inner ring categories + outer ring apps
+// In production: replace with live data from macOS memory APIs
+const categories = [
+  {
+    id: 'user-apps',
+    label: 'User Apps',
+    shortLabel: 'Apps',
+    color: '#3a3a3e',
+    memGB: 12.8,
+    apps: [
+      { name: 'zoom.us',       memGB: 3.2,   color: '#2D8CFF' },
+      { name: 'Safari',        memGB: 1.9,   color: '#006ECD' },
+      { name: 'Xcode',         memGB: 2.4,   color: '#1472DB' },
+      { name: 'Slack',         memGB: 1.0,   color: '#611f69' },
+      { name: 'Arc',           memGB: 1.2,   color: '#e8521a' },
+      { name: 'VS Code',       memGB: 0.9,   color: '#007acc' },
+      { name: 'Terminal',      memGB: 0.5,   color: '#2C2C2E' },
+      { name: 'Other Apps',    memGB: 1.7,   color: '#48484c' },
+    ]
+  },
+  {
+    id: 'user-procs',
+    label: 'User Processes',
+    shortLabel: 'Procs',
+    color: '#2a2a2e',
+    memGB: 7.8,
+    apps: [
+      { name: 'node (2.191)',  memGB: 1.5,   color: '#68A063' },
+      { name: 'node',          memGB: 1.2,   color: '#5B9A57' },
+      { name: 'node',          memGB: 0.9,   color: '#4E8B4B' },
+      { name: 'node',          memGB: 0.7,   color: '#417840' },
+      { name: 'caffeine',      memGB: 0.3,   color: '#8B572A' },
+      { name: 'zsh',           memGB: 0.5,   color: '#555' },
+      { name: 'Other Procs',   memGB: 2.7,   color: '#3a3a3e' },
+    ]
+  },
+  {
+    id: 'file-cache',
+    label: 'File Cache',
+    shortLabel: 'Cache',
+    color: '#3d3d42',
+    memGB: 3.8,
+    apps: [
+      { name: 'File Cache',    memGB: 3.8,   color: '#545459' },
+    ]
+  },
+  {
+    id: 'wired',
+    label: 'Wired Mem.',
+    shortLabel: 'Wired',
+    color: '#72727a',
+    memGB: 2.3,
+    apps: [
+      { name: 'Wired Memory',  memGB: 2.3,   color: '#8a8a92' },
+    ]
+  },
+  {
+    id: 'compressed',
+    label: 'Compressed',
+    shortLabel: 'Comp.',
+    color: '#4a4a52',
+    memGB: 0.9,
+    apps: [
+      { name: 'Compressed',    memGB: 0.9,   color: '#6a6a72' },
+    ]
+  },
+  {
+    id: 'free',
+    label: 'Free',
+    shortLabel: 'Free',
+    color: '#222226',
+    memGB: 0.2,
+    apps: [
+      { name: 'Free',          memGB: 0.2,   color: '#2a2a2e' },
+    ]
+  },
+];
+
+// ─── GEOMETRY ─────────────────────────────────────────────────────────────────
+const CX = 280, CY = 280;
+const OUTER_R = 254;
+const OUTER_INNER_R = 162;   // boundary between inner and outer ring
+const INNER_INNER_R = 92;    // inner hole radius
+const GAP = 0.011;           // radians gap between slices
+const START = -Math.PI / 2;  // 12 o'clock
+const MIN_LABEL_OUTER = 0.032;
+const MIN_LABEL_INNER = 0.055;
+
+// ─── MATH HELPERS ─────────────────────────────────────────────────────────────
+function pt(r, a) {
+  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
+}
+
+function arc(rIn, rOut, a1, a2) {
+  if (a2 - a1 < 0.001) return '';
+  const p1 = pt(rOut, a1), p2 = pt(rOut, a2);
+  const p3 = pt(rIn,  a2), p4 = pt(rIn,  a1);
+  const lg = (a2 - a1) > Math.PI ? 1 : 0;
+  return `M${p1.x},${p1.y} A${rOut},${rOut},0,${lg},1,${p2.x},${p2.y} L${p3.x},${p3.y} A${rIn},${rIn},0,${lg},0,${p4.x},${p4.y}Z`;
+}
+
+function formatMem(gb) {
+  if (gb >= 1) return `${gb.toFixed(2)} GB`;
+  return `${Math.round(gb * 1024)} MB`;
+}
+
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  Object.entries(attrs).forEach(([k, v]) => el.setAttribute(k, v));
+  return el;
+}
+
+// ─── BUILD MAIN SVG ───────────────────────────────────────────────────────────
+function buildMainSVG() {
+  const svg = svgEl('svg', { viewBox: '0 0 560 560', class: 'main-svg' });
+
+  // Background circles
+  svg.appendChild(svgEl('circle', { cx: CX, cy: CY, r: OUTER_R,       fill: '#1c1c1e' }));
+  svg.appendChild(svgEl('circle', { cx: CX, cy: CY, r: OUTER_INNER_R - 5, fill: '#181818' }));
+  svg.appendChild(svgEl('circle', { cx: CX, cy: CY, r: INNER_INNER_R, fill: '#141414' }));
+
+  const totalMem = categories.reduce((s, c) => s + c.memGB, 0);
+  let catAngle = START;
+
+  categories.forEach(cat => {
+    const catFrac = cat.memGB / totalMem;
+    const catSpan = catFrac * 2 * Math.PI - GAP;
+    const catA1 = catAngle + GAP / 2;
+    const catA2 = catA1 + catSpan;
+    const catMid = (catA1 + catA2) / 2;
+
+    // ── Inner ring (category) ──
+    const d = arc(INNER_INNER_R + 2, OUTER_INNER_R - 6, catA1, catA2);
+    if (d) {
+      const path = svgEl('path', { d, fill: cat.color, class: 'inner-slice' });
+      svg.appendChild(path);
+    }
+
+    // Inner ring label
+    if (catFrac >= MIN_LABEL_INNER) {
+      if (catFrac >= 0.15) {
+        // Callout label outside outer boundary
+        const calloutStartR = OUTER_R + 10;
+        const calloutEndR   = OUTER_R + 28;
+        const textR         = OUTER_R + 36;
+        const anchor = Math.cos(catMid) > 0.05 ? 'start' : (Math.cos(catMid) < -0.05 ? 'end' : 'middle');
+
+        const lp  = pt(calloutStartR, catMid);
+        const cp  = pt(calloutEndR, catMid);
+        const tp  = pt(textR, catMid);
+
+        // Small tick mark at ring edge
+        const edgePt = pt(OUTER_R + 2, catMid);
+        svg.appendChild(svgEl('line', {
+          x1: edgePt.x, y1: edgePt.y, x2: cp.x, y2: cp.y,
+          class: 'callout-line'
+        }));
+
+        const label = svgEl('text', {
+          x: tp.x, y: tp.y,
+          'text-anchor': anchor,
+          'dominant-baseline': 'middle',
+          class: 'callout-label'
+        });
+        label.textContent = cat.label;
+        svg.appendChild(label);
+      } else {
+        // Inline label along the arc inside inner ring
+        const lp = pt((INNER_INNER_R + OUTER_INNER_R) / 2, catMid);
+        const rot = (catMid * 180 / Math.PI) + 90;
+        const label = svgEl('text', {
+          x: lp.x, y: lp.y,
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          transform: `rotate(${rot},${lp.x},${lp.y})`,
+          class: 'ring-label',
+          'font-size': '9'
+        });
+        label.textContent = cat.shortLabel;
+        svg.appendChild(label);
+      }
+    }
+
+    // ── Outer ring (apps) ──
+    const catTotalApps = cat.apps.reduce((s, a) => s + a.memGB, 0);
+    let appAngle = catA1;
+
+    cat.apps.forEach(app => {
+      const appFrac = app.memGB / totalMem;
+      const appSpan = (app.memGB / catTotalApps) * catSpan - GAP * 0.4;
+      const appA1 = appAngle + GAP * 0.2;
+      const appA2 = appA1 + appSpan;
+      const appMid = (appA1 + appA2) / 2;
+      appAngle += (app.memGB / catTotalApps) * catSpan;
+
+      const od = arc(OUTER_INNER_R + 4, OUTER_R - 3, appA1, appA2);
+      if (!od) return;
+
+      const path = svgEl('path', {
+        d: od,
+        fill: app.color,
+        class: 'outer-slice',
+        'data-name': app.name,
+        'data-mem': formatMem(app.memGB),
+        'data-pct': `${((app.memGB / USED_GB) * 100).toFixed(1)}% of used memory`,
+        'data-color': app.color,
+      });
+
+      path.addEventListener('mouseenter', onHover);
+      path.addEventListener('mousemove', onMove);
+      path.addEventListener('mouseleave', onLeave);
+      svg.appendChild(path);
+
+      // Label on outer ring slice
+      if (appFrac >= MIN_LABEL_OUTER) {
+        const lp = pt((OUTER_INNER_R + OUTER_R) / 2, appMid);
+        const rot = (appMid * 180 / Math.PI) + 90;
+        const rawName = app.name.split(' ')[0];
+        const label = svgEl('text', {
+          x: lp.x, y: lp.y,
+          'text-anchor': 'middle',
+          'dominant-baseline': 'middle',
+          transform: `rotate(${rot},${lp.x},${lp.y})`,
+          fill: 'rgba(255,255,255,0.65)',
+          'font-size': '9',
+          'font-family': '-apple-system, sans-serif',
+          'pointer-events': 'none',
+          'font-weight': '500'
+        });
+        label.textContent = rawName.length > 9 ? rawName.slice(0, 8) + '…' : rawName;
+        svg.appendChild(label);
+      }
+    });
+
+    catAngle += catFrac * 2 * Math.PI;
+  });
+
+  // Outer thin border ring (subtle)
+  svg.appendChild(svgEl('circle', {
+    cx: CX, cy: CY, r: OUTER_R - 1,
+    fill: 'none', stroke: 'rgba(255,255,255,0.04)', 'stroke-width': '1'
+  }));
+
+  return svg;
+}
+
+// ─── BUILD SWAP RING ──────────────────────────────────────────────────────────
+function buildSwapSVG() {
+  const svg = svgEl('svg', { viewBox: '0 0 130 130' });
+  const cx = 65, cy = 65, rOut = 56, rIn = 36;
+  const maxSwap = 16;
+  const usedFrac = Math.min(SWAP_GB / maxSwap, 0.98);
+  const usedSpan = usedFrac * 2 * Math.PI - 0.03;
+
+  // Background full ring
+  const fullArc = arc(rIn, rOut, -Math.PI/2, -Math.PI/2 + 2*Math.PI - 0.02);
+
+  function arcLocal(rIn, rOut, a1, a2) {
+    if (a2 - a1 < 0.001) return '';
+    const p1 = { x: cx + rOut * Math.cos(a1), y: cy + rOut * Math.sin(a1) };
+    const p2 = { x: cx + rOut * Math.cos(a2), y: cy + rOut * Math.sin(a2) };
+    const p3 = { x: cx + rIn  * Math.cos(a2), y: cy + rIn  * Math.sin(a2) };
+    const p4 = { x: cx + rIn  * Math.cos(a1), y: cy + rIn  * Math.sin(a1) };
+    const lg = (a2 - a1) > Math.PI ? 1 : 0;
+    return `M${p1.x},${p1.y} A${rOut},${rOut},0,${lg},1,${p2.x},${p2.y} L${p3.x},${p3.y} A${rIn},${rIn},0,${lg},0,${p4.x},${p4.y}Z`;
+  }
+
+  const bgPath = svgEl('path', { d: arcLocal(rIn, rOut, -Math.PI/2, -Math.PI/2 + 2*Math.PI - 0.02), fill: '#252528' });
+  svg.appendChild(bgPath);
+
+  // Used swap
+  const usedPath = svgEl('path', {
+    d: arcLocal(rIn + 2, rOut - 2, -Math.PI/2, -Math.PI/2 + usedSpan),
+    fill: '#8a8a96'
+  });
+  svg.appendChild(usedPath);
+
+  // Thin border
+  svg.appendChild(svgEl('circle', { cx, cy, r: rOut - 0.5, fill: 'none', stroke: 'rgba(255,255,255,0.05)', 'stroke-width': '1' }));
+
+  return svg;
+}
+
+// ─── TOOLTIP LOGIC ────────────────────────────────────────────────────────────
+const tooltip = document.getElementById('tooltip');
+const ttDot = document.getElementById('ttDot');
+const ttName = document.getElementById('ttName');
+const ttMem = document.getElementById('ttMem');
+const ttPct = document.getElementById('ttPct');
+
+const centerMain = document.getElementById('centerMain');
+const centerSub = document.getElementById('centerSub');
+const centerFootprint = document.getElementById('centerFootprint');
+
+const DEFAULT_CENTER_MAIN = '27.8 GB';
+const DEFAULT_CENTER_SUB = 'of 24 GB RAM';
+const DEFAULT_CENTER_FOOT = '<span>Footprint:</span> 36.38 GB';
+
+let hideTimeout;
+
+function onHover(e) {
+  clearTimeout(hideTimeout);
+  const el = e.currentTarget;
+  const name = el.dataset.name;
+  const mem = el.dataset.mem;
+  const pct = el.dataset.pct;
+  const color = el.dataset.color;
+
+  ttDot.style.background = color;
+  ttName.textContent = name;
+  ttMem.textContent = mem;
+  ttPct.textContent = pct;
+  tooltip.classList.add('visible');
+
+  // Update center
+  centerMain.textContent = mem;
+  centerSub.textContent = name;
+  centerFootprint.style.opacity = '0';
+
+  positionTooltip(e);
+}
+
+function onMove(e) { positionTooltip(e); }
+
+function onLeave() {
+  tooltip.classList.remove('visible');
+  hideTimeout = setTimeout(() => {
+    centerMain.textContent = DEFAULT_CENTER_MAIN;
+    centerSub.textContent = DEFAULT_CENTER_SUB;
+    centerFootprint.innerHTML = DEFAULT_CENTER_FOOT;
+    centerFootprint.style.opacity = '1';
+  }, 80);
+}
+
+function positionTooltip(e) {
+  const pad = 14;
+  let x = e.clientX + pad;
+  let y = e.clientY - 10;
+  const tw = 180, th = 70;
+  if (x + tw > window.innerWidth - 10) x = e.clientX - tw - pad;
+  if (y + th > window.innerHeight - 10) y = e.clientY - th - pad;
+  tooltip.style.left = `${x}px`;
+  tooltip.style.top  = `${y}px`;
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+const wrapper = document.getElementById('chartWrapper');
+const swapRing = document.getElementById('swapRing');
+
+const mainSvg = buildMainSVG();
+wrapper.insertBefore(mainSvg, wrapper.firstChild);
+
+const swapSvg = buildSwapSVG();
+swapRing.insertBefore(swapSvg, swapRing.firstChild);
+</script>
+</body>
+</html>
