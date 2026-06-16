@@ -110,6 +110,12 @@ The privileged helper trust boundary is the most important surface to keep
 correct. See [SECURITY.md](SECURITY.md) for the disclosure flow if you find
 anything that crosses the boundary.
 
+## Versioning
+
+MacVital follows semver. `main` is the development branch and may
+contain unfinished work. Tagged releases (`v0.x.y`) are the supported
+points to build from.
+
 ## License
 
 MIT, see [LICENSE](LICENSE).
