@@ -1,4 +1,25 @@
+# Swift / SwiftPM
 .build/
+.swiftpm/
+Packages/
+Package.resolved
+
+# Xcode
 build/
 DerivedData/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.dSYM/
+
+# Coverage / profiling
+default.profraw
+*.profraw
+
+# macOS
 .DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp
